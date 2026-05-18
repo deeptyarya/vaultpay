@@ -2,12 +2,19 @@
 
 ## Skills (user-invocable)
 
+Type skill commands directly into the Claude Code prompt (CLI or IDE extension). Claude Code recognises the `/` prefix and executes the matching skill.
+
 | Skill | Command | What it does |
 |---|---|---|
 | test-plan | `/test-plan [feature]` | Reads references, drafts TC scenarios for the feature, saves to `docs/test-plans/{feature}.md` |
 | generate-tests | `/generate-tests [feature or TC IDs]` | Reads test plan, writes `tests/e2e/{feature}.spec.ts`, runs Playwright, self-reviews |
 
-Always run `/test-plan` before `/generate-tests`. If a test plan already exists, skip straight to `/generate-tests`.
+**Workflow order matters** — always run `/test-plan` first. `/generate-tests` will fail if `docs/test-plans/{feature}.md` does not exist. If a test plan already exists, skip straight to `/generate-tests`.
+
+```
+/test-plan send-money        →  docs/test-plans/send-money.md
+/generate-tests send-money   →  tests/e2e/send-money.spec.ts (run + reviewed)
+```
 
 ---
 
