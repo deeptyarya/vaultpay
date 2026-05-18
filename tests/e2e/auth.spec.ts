@@ -1,11 +1,9 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:5173';
 const DEMO_EMAIL = 'demo@vaultpay.com';
 const DEMO_PASSWORD = 'Demo@1234';
 
-async function login(page) {
-  await page.goto(BASE_URL);
+async function login(page: Page): Promise<void> {
   await page.getByTestId('signin-email').fill(DEMO_EMAIL);
   await page.getByTestId('signin-password').fill(DEMO_PASSWORD);
   await page.getByTestId('signin-submit').click();
@@ -14,7 +12,7 @@ async function login(page) {
 
 test.describe('Auth — Sign In', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto('/');
   });
 
   test('TC-001: happy path — demo user lands on dashboard with correct data', async ({ page }) => {
