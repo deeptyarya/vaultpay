@@ -9,7 +9,7 @@ export default defineConfig({
   use: {
     baseURL: 'http://localhost:3000',
     browserName: 'chromium',
-    headless: true,
+    headless: !!process.env['CI'],
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },
