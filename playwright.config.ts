@@ -7,7 +7,7 @@ export default defineConfig({
   fullyParallel: false,
   reporter: [['html', { outputFolder: 'playwright-report', open: 'never' }], ['line']],
   use: {
-    baseURL: 'http://localhost:5173',
+    baseURL: 'http://localhost:3000',
     browserName: 'chromium',
     headless: true,
     screenshot: 'only-on-failure',
@@ -15,7 +15,7 @@ export default defineConfig({
   },
   webServer: {
     command: 'npm run dev',
-    url: 'http://localhost:5173',
+    url: 'http://localhost:3000',
     reuseExistingServer: !process.env['CI'],
     timeout: 30000,
   },
