@@ -1,6 +1,6 @@
 ---
 name: test-plan
-description: Draft a structured test plan for a VaultPay feature. Saves to docs/test-plans/{feature}.md. Run this before /generate-tests.
+description: Draft a structured test plan for a VaultPay feature. Saves to docs/test-plans/{feature}.md. Recommended before /generate-tests, but /generate-tests can run without it and will create the plan at the end.
 argument-hint: [feature name — e.g. "auth", "send-money", "cards", or blank for full suite]
 ---
 
@@ -8,12 +8,12 @@ argument-hint: [feature name — e.g. "auth", "send-money", "cards", or blank fo
 
 ## Step 1 — Load References
 
-Read all files in `.claude/references/`:
-- `domain.md` — app facts, mock data, component structure
-- `business-rules.md` — exact validation rules, error messages, toast text, timing delays
-- `ui-selectors.md` — all `data-testid` values (case-sensitive)
-- `user-flows.md` — step-by-step flows, known limitations, timing details
-- `test-planning.md` — required TC structure, category buckets, coverage checklist
+Read the following reference files:
+- `domain.md` — app facts, mock data, all timing delays, page state machine
+- `business-rules.md` — exact validation rules, error messages, toast text, visual thresholds
+- `test-planning.md` — required TC structure, category buckets, coverage checklist, TC ID convention table
+
+Also read `ui-selectors.md` for a quick map of what UI elements exist per page (planning context only — page objects are authoritative for implementation).
 
 ## Step 2 — Draft Scenarios
 

@@ -1,5 +1,8 @@
 # VaultPay — UI Selectors (data-testid Reference)
 
+> **Authoritative source for implementation**: `tests/e2e/pages/*.ts` page objects own all selector definitions.
+> This file is planning context for `/test-plan` — selectors here may lag behind the code. Do not use as implementation reference.
+
 All interactive elements and key containers carry a `data-testid` attribute. Use `page.getByTestId('X')` in Playwright.
 
 ---

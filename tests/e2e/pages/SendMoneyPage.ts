@@ -1,0 +1,65 @@
+import { type Page, type Locator } from '@playwright/test';
+import { BasePage } from './BasePage';
+
+/**
+ * Send Money Page — transfer funds to contacts or by email.
+ * data-testid root: send-money-page
+ * Reference: .claude/references/ui-selectors.md § Send Money Page
+ *
+ * Note: nav testid is 'nav-send' but page root is 'send-money-page' (asymmetric by design in the app).
+ */
+export class SendMoneyPage extends BasePage {
+  readonly path = '';
+
+  readonly sendMoneyPage: Locator;
+  readonly recipientEmail: Locator;
+  readonly sendAmount: Locator;
+  readonly sendNote: Locator;
+  readonly sendSubmit: Locator;
+  readonly recipientError: Locator;
+  readonly amountError: Locator;
+  readonly toastMessage: Locator;
+  readonly modalOverlay: Locator;
+  readonly modal: Locator;
+  readonly modalConfirm: Locator;
+  readonly modalCancel: Locator;
+
+  constructor(page: Page) {
+    super(page);
+    this.sendMoneyPage  = page.getByTestId('send-money-page');
+    this.recipientEmail = page.getByTestId('recipient-email');
+    this.sendAmount     = page.getByTestId('send-amount');
+    this.sendNote       = page.getByTestId('send-note');
+    this.sendSubmit     = page.getByTestId('send-submit');
+    this.recipientError = page.getByTestId('recipient-error');
+    this.amountError    = page.getByTestId('amount-error');
+    this.toastMessage   = page.getByTestId('toast-message');
+    this.modalOverlay   = page.getByTestId('modal-overlay');
+    this.modal          = page.getByTestId('modal');
+    this.modalConfirm   = page.getByTestId('modal-confirm');
+    this.modalCancel    = page.getByTestId('modal-cancel');
+  }
+
+  get requiredElements(): Locator[] {
+    return [this.sendMoneyPage];
+  }
+
+  override navigate(): Promise<void> {
+    throw new Error('SendMoneyPage has no direct URL route — use navigateViaSidebar() after login');
+  }
+
+  async navigateViaSidebar(): Promise<void> {
+    // nav-send → send-money-page: nav testid and page container testid differ (app quirk)
+    await super.navigateViaSidebar('nav-send', 'send-money-page');
+  }
+
+  contactChip(contactId: string): Locator {
+    return this.page.getByTestId(`contact-${contactId}`);
+  }
+
+  async fillAndReview(amount: number, note?: string): Promise<void> {
+    await this.sendAmount.fill(String(amount));
+    if (note) await this.sendNote.fill(note);
+    await this.sendSubmit.click();
+  }
+}
