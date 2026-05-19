@@ -48,23 +48,41 @@ Test specs live in `tests/e2e/tests/`. The dev server must be running before you
 
 This repo uses two Claude Code skills to generate and maintain tests. Run them from inside Claude Code.
 
-### Workflow
+### Standard workflow (recommended)
 
 ```
-/test-plan cards          →  writes docs/test-plans/cards.md
-/generate-tests cards     →  writes tests/e2e/cards.spec.ts, runs it, self-reviews
+/test-plan send-money      →  docs/test-plans/send-money.md
+/generate-tests send-money →  tests/e2e/tests/send-money.spec.ts (run + self-reviewed)
 ```
 
-Run `/test-plan` first when possible. `/generate-tests` can also run without a test plan — it generates the spec from your description and saves the test plan at the end.
+### Ad-hoc workflow (no test plan needed)
+
+```
+/generate-tests budget     →  reads pages/BudgetPage.ts, writes spec, runs it,
+                               then backfills docs/test-plans/budget.md at the end
+```
+
+### Target specific TCs
+
+```
+/generate-tests Send-TC-001 Send-TC-013   →  generates only those two TCs
+/generate-tests Cards-TC-004 Cards-TC-005 →  add TCs to an existing spec
+```
+
+### Fix a flaky test
+
+```
+/generate-tests Cards-TC-007   →  re-reads CardsPage.ts, re-runs, self-reviews the diff
+```
 
 ### What each skill does
 
-| Skill | Command | Output |
+| Skill | Input | Output |
 |---|---|---|
-| test-plan | `/test-plan [feature]` | `docs/test-plans/{feature}.md` — TC scenarios with priority, layer, business rule refs |
-| generate-tests | `/generate-tests [feature]` | `tests/e2e/{feature}.spec.ts` — Playwright spec, run until green, then self-reviewed |
+| `/test-plan` | feature name (e.g. `budget`) | `docs/test-plans/budget.md` — TC scenarios with priority, layer, business rule references |
+| `/generate-tests` | feature name or TC IDs | `tests/e2e/tests/{feature}.spec.ts` — POM-based Playwright spec, run until green, self-reviewed |
 
-You can also target specific TCs: `/generate-tests Cards-TC-004 Cards-TC-005`
+Both skills read page objects (`tests/e2e/pages/*.ts`) and flows (`tests/e2e/flows/*.ts`) directly — selectors and multi-step sequences only need updating in one place.
 
 ### Repo layout
 

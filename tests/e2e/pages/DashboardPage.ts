@@ -53,4 +53,14 @@ export class DashboardPage extends BasePage {
   async getBalanceText(): Promise<string> {
     return (await this.statBalance.textContent()) ?? '';
   }
+
+  /** Dynamic locator for a specific row in the recent transactions table by transaction ID. */
+  txnRow(id: string): Locator {
+    return this.recentTransactionsTable.getByTestId(`txn-row-${id}`);
+  }
+
+  /** Returns the number of transaction rows visible in the recent transactions table. */
+  async getRecentTxnCount(): Promise<number> {
+    return this.recentTransactionsTable.locator('tbody tr').count();
+  }
 }

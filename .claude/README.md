@@ -37,6 +37,16 @@ Reference files contain domain knowledge — facts and rules that are not deriva
 
 ---
 
+## Updating or Adding Skills
+
+See [`.claude/skills/SKILL_AUTHORING.md`](skills/SKILL_AUTHORING.md) for:
+- Architecture principles (what belongs in references vs page objects vs skills)
+- Copy-paste prompts for updating an existing skill or adding a new one
+- Validation sequence to run after any skill change
+- What NOT to put in a skill step
+
+---
+
 ## Rules (always-on, no invocation needed)
 
 | File | Scope | What it enforces |
