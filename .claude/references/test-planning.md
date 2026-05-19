@@ -133,7 +133,8 @@ Every test case must have all fields:
 **Priority**: <P0 | P1 | P2 | P3>
 **Preconditions**: <what must be true before the test starts>
 **Steps**:
-1. <imperative action — e.g. Fill, Click, Select, Navigate, Wait>
+1. <human-readable action — e.g. "Fill email field with invalid format", "Click Send button", "Observe the balance stat card">
+   Do NOT reference selector names or data-testid values here — those belong in the spec code.
 2. …
 
 **Expected Results**:

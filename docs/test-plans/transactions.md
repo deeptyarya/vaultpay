@@ -238,7 +238,7 @@
 - Badge text reads "pending"
 - Badge has class `txn-status pending` (yellow styling)
 
-**Business Rule**: pending status renders `.txn-status.pending` class (ui-selectors.md § CSS Classes)  
+**Business Rule**: pending status renders `.txn-status.pending` class (App.jsx — txn-status CSS classes)  
 **Suggested Layer**: Component
 
 ## Trans-TC-018: Transactions — Completed Status Badge Styling
@@ -253,7 +253,7 @@
 - Badge text reads "completed"
 - Badge has class `txn-status completed` (green styling)
 
-**Business Rule**: completed status renders `.txn-status.completed` class (ui-selectors.md § CSS Classes)  
+**Business Rule**: completed status renders `.txn-status.completed` class (App.jsx — txn-status CSS classes)  
 **Suggested Layer**: Component
 
 ## Trans-TC-019: Transactions — Clearing Search Restores All Results

@@ -7,86 +7,99 @@ Standard structure for all VaultPay E2E test files. Every spec must follow this 
 ## Standard Test File
 
 ```typescript
-import { test, expect } from '@playwright/test';
-import { login, navigateTo } from './fixtures';
+/**
+ * {Feature} E2E Tests
+ * Test plan: docs/test-plans/{feature}.md
+ * E2E coverage: {Prefix}-TC-001, {Prefix}-TC-002, …
+ * Skipped (Component): {Prefix}-TC-003 — isolated render, no browser navigation
+ * Skipped (Unit): {Prefix}-TC-004 — pure logic, no DOM interaction
+ */
+import { test, expect } from '../fixtures/base-fixture';
+import { DEMO_USER } from '../fixtures/test-users';
 
 test.describe('<FeatureName>', () => {
-  test.beforeEach(async ({ page }) => {
-    await login(page);
-    // Navigate to feature page if all tests share it:
-    // await navigateTo(page, 'cards');
+  test.beforeEach(async ({ authFlow, featurePage }) => {
+    await authFlow.loginAsDemo();           // absorbs the 1,200ms sign-in delay
+    await featurePage.navigateViaSidebar(); // sidebar click + waits for page container
   });
 
-  test('{Prefix}-TC-NNN: <concise descriptive title>', async ({ page }) => {
-    // Step 1: Navigate
-    await navigateTo(page, '<feature>');
+  test('{Prefix}-TC-NNN: <concise descriptive title>', async ({ featurePage }) => {
+    // Step 1: Act via page object method
+    await featurePage.someAction();
 
-    // Step 2: Interact
-    await page.getByTestId('<selector>').click();
-
-    // Step 3: Assert
-    await expect(page.getByTestId('<outcome>')).toBeVisible();
-    await expect(page.getByTestId('<outcome>')).toContainText('<expected text>');
+    // Step 2: Assert via page object locator
+    await expect(featurePage.someLocator).toContainText('<expected text>');
   });
 });
 ```
 
-**Auth tests only:** No `login()` in `beforeEach`. Import `BASE_URL, DEMO_EMAIL, DEMO_PASSWORD` from `./fixtures` and call `page.goto(BASE_URL)` directly — the tests are exercising the login flow itself.
+**Auth spec exception** — no `authFlow` in `beforeEach` (tests exercise the login flow itself):
+```typescript
+test.beforeEach(async ({ loginPage }) => {
+  await loginPage.navigate();
+});
+
+test('Auth-TC-001: …', async ({ loginPage, dashboardPage }) => {
+  await loginPage.fillAndSubmit(DEMO_USER.email, DEMO_USER.password);
+  await loginPage.waitForDashboard(); // absorbs 1,200ms delay
+  // … assertions via dashboardPage locators
+});
+```
 
 ---
 
 ## Async Delay Patterns
 
-| Operation | Delay | Wait Pattern |
+| Operation | Delay | Wait pattern |
 |---|---|---|
-| Sign-in submit | 1,200ms | `dashboard-page` waitFor visible |
-| Sign-up submit | 1,200ms | `dashboard-page` waitFor visible |
-| Send money confirm | 1,500ms | `toast-message` waitFor visible |
-| Toast auto-dismiss | 3,000ms | Do NOT wait — just assert appeared |
-| Toast dismiss test only (Toast-TC-003) | — | `waitFor({ state: 'hidden', timeout: 4000 })` |
+| Sign-in / sign-up submit | 1,200ms | `loginPage.waitForDashboard()` or `authFlow.loginAsDemo()` (handles it) |
+| Send money confirm | 1,500ms | `sendMoneyPage.toastMessage.waitFor({ state: 'visible' })` |
+| Toast auto-dismiss | 3,000ms | Assert toast appeared; do NOT wait for it to disappear unless TC tests dismissal |
+| Toast dismiss test only (Toast-TC-003) | — | `toastMessage.waitFor({ state: 'hidden', timeout: 4000 })` |
 
 ---
 
 ## Common Assertion Patterns
 
 ```typescript
-// Visibility
-await expect(page.getByTestId('dashboard-page')).toBeVisible();
-await expect(page.getByTestId('modal-overlay')).not.toBeVisible();
+// Visibility (via page object locator)
+await expect(dashboardPage.dashboardPage).toBeVisible();
+await expect(cardsPage.modalOverlay).not.toBeVisible();
 
-// Text (prefer toContainText over toHaveText for partial matches)
-await expect(page.getByTestId('stat-balance')).toContainText('$24,850.75');
-await expect(page.getByTestId('form-error')).toHaveText('Invalid credentials. Try demo@vaultpay.com / Demo@1234');
+// Text (toContainText for partial, toHaveText for exact)
+await expect(dashboardPage.statBalance).toContainText(DEMO_USER.balance);
+await expect(loginPage.formError).toHaveText('Invalid credentials. Try demo@vaultpay.com / Demo@1234');
+
+// Dynamic locator (card, transaction)
+await expect(cardsPage.cardContainer('CARD-001')).toContainText('FROZEN');
+await expect(transactionsPage.txnRow('TXN-001')).toBeVisible();
 
 // CSS class (use regex — element may have multiple classes)
 await expect(page.getByTestId('toggle-twoFactor')).toHaveClass(/on/);
 await expect(page.getByTestId('nav-dashboard')).toHaveClass(/active/);
 
-// Row count
-const rows = page.locator('[data-testid^="txn-row-"]');
-await expect(rows).toHaveCount(12);
+// Row count (via page object method)
+expect(await transactionsPage.getVisibleRowCount()).toBe(12);
 
 // Input value
-await expect(page.getByTestId('settings-name')).toHaveValue('Alex Morgan');
+await expect(settingsPage.settingsName).toHaveValue('Alex Morgan');
 
 // Button state
-await expect(page.getByTestId('signin-submit')).toBeDisabled();
+await expect(loginPage.submitButton).toBeDisabled();
 ```
 
 ---
 
 ## Known Limitation Tests
 
-Add `// KNOWN LIMITATION` comment for TCs that assert an app limitation is present:
-
 ```typescript
-test('Send-TC-013: balance not deducted after transfer', async ({ page }) => {
-  // KNOWN LIMITATION: balance never decreases after send money
-  await expect(page.getByTestId('stat-balance')).toContainText('$24,850.75');
+test('{Prefix}-TC-NNN: <title>', async ({ featurePage }) => {
+  // KNOWN LIMITATION: <what the app does not do>
+  // … assertions that confirm the limitation is still present
 });
 ```
 
-Known limitation TCs: `Send-TC-013` (balance), `Cards-TC-012` (lock card UI), `Settings-TC-014` (delete account logout), `Sec-TC-010` (no-op buttons).
+Known limitation TCs: `Send-TC-013` (balance not deducted), `Cards-TC-012` (lock card UI unchanged), `Settings-TC-014` (delete account no logout), `Sec-TC-010` (no-op buttons).
 
 ---
 
@@ -94,12 +107,17 @@ Known limitation TCs: `Send-TC-013` (balance), `Cards-TC-012` (lock card UI), `S
 
 | NEVER | Do instead |
 |---|---|
-| `page.waitForTimeout(1200)` | `waitFor({ state: 'visible' })` on outcome element |
+| `import { test, expect } from '@playwright/test'` in spec | Import from `'../fixtures/base-fixture'` |
+| `page.getByTestId('freeze-CARD-001').click()` inline in spec | `cardsPage.toggleFreeze('CARD-001')` |
+| `page.getByTestId('nav-cards').click()` inline | `cardsPage.navigateViaSidebar()` |
+| `await page.goto('http://localhost:3000')` in spec | `loginPage.navigate()` (uses baseURL) |
+| `page.waitForTimeout(1200)` | `loginPage.waitForDashboard()` or `authFlow.loginAsDemo()` |
+| `page.waitForTimeout(1500)` | `sendMoneyPage.toastMessage.waitFor({ state: 'visible' })` |
 | `page.waitForTimeout(3000)` for toast | Assert toast appeared, then proceed |
-| `page.route('**/api/**', ...)` | Remove — VaultPay has zero API calls |
+| `page.route('**/api/**', …)` | Remove — VaultPay has zero API calls |
 | `waitUntil: 'networkidle'` | Just `page.goto(url)` |
-| `page.getByText('Sign In')` | `page.getByTestId('signin-submit')` |
-| `.nth(0)` / `.first()` without filter | Use specific `data-testid` |
+| `page.getByText('Sign In')` | Use page object locator (`loginPage.submitButton`) |
+| `.nth(0)` / `.first()` without filter | Use specific `data-testid` via page object method |
 | `test.only()` left in code | Remove before commit |
-| No assertion after action | Always assert the outcome |
-| Asserting balance decreased after send | Assert it stayed at `$24,850.75` |
+| Asserting balance decreased after send | Assert it stayed at `$24,850.75` (known limitation) |
+| Instantiating page objects in tests: `new CardsPage(page)` | Use fixture injection: `async ({ cardsPage }) => …` |

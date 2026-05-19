@@ -1,71 +1,80 @@
 # VaultPay — Test Review Checklist
 
-Work through every item for each test file under review.
+Work through every item for each spec, page object, or flow under review.
 
 ---
 
-## Auth & Login Pattern
+## Page Object & Fixture Usage
 
-- [ ] Every test needing auth imports and calls `login(page)` from `./fixtures`
-- [ ] `login()` waits for `dashboard-page` with `waitFor({ state: 'visible' })` — not `waitForTimeout(1200)`
-- [ ] Credentials use exported constants (`DEMO_EMAIL`, `DEMO_PASSWORD`) — not inline strings
-- [ ] No test skips login and directly navigates to an authenticated page
+- [ ] Spec imports `test`, `expect` from `../fixtures/base-fixture` — not `@playwright/test` directly — `[CRITICAL]`
+- [ ] Spec file lives in `tests/e2e/tests/` not the `tests/e2e/` root — `[CRITICAL]`
+- [ ] Authenticated tests use `authFlow.loginAsDemo()` in `beforeEach` — not inline `fill + click + waitFor` — `[IMPORTANT]`
+- [ ] Navigation uses `<featurePage>.navigateViaSidebar()` — not raw `nav-X.click()` + `.waitFor()` — `[IMPORTANT]`
+- [ ] User data comes from `DEMO_USER` constants (`DEMO_USER.email`, `DEMO_USER.balance`) — not inline strings — `[IMPORTANT]`
+- [ ] Spec interactions call page object methods — not raw `page.getByTestId(...).click()` in test body — `[IMPORTANT]`
+- [ ] Multi-step sequences (>3 PO interactions) extracted to a Flow class — `[SUGGESTION]`
+- [ ] Flows call PO methods only — never `page`, `page.goto()`, or `page.getByTestId()` directly — `[CRITICAL]`
+- [ ] Flows do not call `.waitFor()` or Playwright methods on PO Locator properties — use `waitForToast()`, `waitForModal()`, `confirmModal()`, `cancelModal()` instead — `[CRITICAL]`
 
-## Selectors
+## Auth Pattern
 
-- [ ] All selectors use `page.getByTestId('...')` — flag any `getByText()`, CSS locator, `.nth()`, or XPath
-- [ ] Every `data-testid` value exactly matches `references/ui-selectors.md` (case-sensitive: `freeze-CARD-001` not `freeze-card-001`, `toggle-twoFactor` not `toggle-twofactor`)
-- [ ] Row counts use `page.locator('[data-testid^="txn-row-"]')` + `.toHaveCount(N)`
+- [ ] Auth spec: `beforeEach` uses `loginPage.navigate()` only — no `authFlow` (tests exercise the login flow itself)
+- [ ] After `loginPage.fillAndSubmit()`: waits for `loginPage.waitForDashboard()` — not `page.getByTestId(...)` directly, not `waitForTimeout` — `[CRITICAL]`
+- [ ] No test skips authentication and directly navigates to an authenticated page without `authFlow.loginAsDemo()`
 
 ## Async Delay Handling
 
-- [ ] Sign-in: after `signin-submit` click → waits for `dashboard-page` visible, not `waitForTimeout(1200)` — `[CRITICAL]`
-- [ ] Sign-up: after `signup-submit` click → waits for `dashboard-page` visible, not `waitForTimeout(1200)` — `[CRITICAL]`
-- [ ] Send money confirm: after `modal-confirm` click → waits for `toast-message` visible, not `waitForTimeout(1500)` — `[CRITICAL]`
-- [ ] Any `page.waitForTimeout(N)` anywhere — `[CRITICAL]`
+- [ ] Sign-in: after submit → `loginPage.waitForDashboard()` — not `waitForTimeout(1200)` — `[CRITICAL]`
+- [ ] Sign-up: after submit → `page.getByTestId('dashboard-page').waitFor({ state: 'visible' })` — `[CRITICAL]`
+- [ ] Send money confirm: after `modal-confirm` → toast `waitFor({ state: 'visible' })` — not `waitForTimeout(1500)` — `[CRITICAL]`
+- [ ] No `page.waitForTimeout(N)` anywhere — `[CRITICAL]`
 
 ## Assertions
 
-- [ ] Every toast message matches `references/business-rules.md` exactly (common traps: `"two Factor disabled"` not `"Two Factor disabled"`, `"biometric enabled"` lowercase)
-- [ ] Every validation error matches `business-rules.md` exactly (`"Password must be at least 6 characters"` not `"at least 6 chars"`)
-- [ ] CSS class assertions use `toHaveClass(/on/)` (regex), not `toHaveClass('on')` (exact match)
-- [ ] Every click has a follow-up assertion
+- [ ] Every toast message matches `references/business-rules.md` exactly — `[CRITICAL]`
+- [ ] Every validation error matches `business-rules.md` exactly — `[CRITICAL]`
+- [ ] CSS class assertions use regex: `toHaveClass(/on/)` not `toHaveClass('on')` — `[IMPORTANT]`
+- [ ] Every action has a follow-up assertion — `[IMPORTANT]`
 
 ## Architecture Rules
 
 - [ ] No `page.route()` calls — VaultPay has no API — `[CRITICAL]`
 - [ ] No `waitUntil: 'networkidle'` — `[IMPORTANT]`
-- [ ] No assertion that balance decreased after send money — `[CRITICAL]`
-- [ ] Known limitation TCs (`Send-TC-013`, `Cards-TC-012`, `Settings-TC-014`, `Sec-TC-010`) assert the limitation IS present, not that it is fixed
+- [ ] No assertion that balance decreased after send money — assert it stayed at `$24,850.75` — `[CRITICAL]`
+- [ ] Known limitation TCs (`Send-TC-013`, `Cards-TC-012`, `Settings-TC-014`, `Sec-TC-010`) assert the limitation IS present, not fixed
 
 ## Test Structure
 
 - [ ] Tests grouped with `test.describe()` by feature
-- [ ] Each describe block has `test.beforeEach` with `login()` + navigate (if applicable)
-- [ ] Tests are self-contained — no test depends on prior test state
+- [ ] Each describe block has `test.beforeEach` with login + navigate (if all tests share a starting page)
+- [ ] Tests are self-contained — no test depends on state from a prior test
 - [ ] Multi-step tests (>3 actions) use `// Step N:` comments
 - [ ] `test.only()` not present — `[CRITICAL]`
-- [ ] No hardcoded transaction IDs that don't exist in domain.md (`MOCK_TRANSACTIONS`)
+- [ ] Known limitation tests have `// KNOWN LIMITATION: {description}` as the first line in the body
 
 ---
 
 ## Common Issues Reference
 
-| Issue | Severity | Pattern | Fix |
+| Issue | Severity | Bad pattern | Fix |
 |---|---|---|---|
-| Hard wait for login | CRITICAL | `waitForTimeout(1200)` | `dashboard-page` waitFor visible |
-| Hard wait for send delay | CRITICAL | `waitForTimeout(1500)` | `toast-message` waitFor visible |
-| Hard wait for toast | CRITICAL | `waitForTimeout(3000)` | Just assert toast appeared |
+| Wrong import | CRITICAL | `import { test } from '@playwright/test'` | `import { test } from '../fixtures/base-fixture'` |
+| Flows access page directly | CRITICAL | `this.loginPage.page.getByTestId(...)` | Add method to PO: `loginPage.waitForDashboard()` |
+| Flow calls `.waitFor()` on PO locator | CRITICAL | `this.cardsPage.toastMessage.waitFor(...)` | `this.cardsPage.waitForToast()` |
+| Flow calls `.click()` on PO locator | CRITICAL | `this.sendPage.modalConfirm.click()` | `this.sendPage.confirmModal()` |
+| Hard wait for login | CRITICAL | `waitForTimeout(1200)` | `authFlow.loginAsDemo()` or `loginPage.waitForDashboard()` |
+| Hard wait for send delay | CRITICAL | `waitForTimeout(1500)` | Toast `waitFor({ state: 'visible' })` |
+| Hard wait for toast | CRITICAL | `waitForTimeout(3000)` | Assert toast appeared; proceed |
 | API route mock | CRITICAL | `page.route(...)` | Remove entirely |
+| Balance deduction asserted | CRITICAL | `not.toContainText('$24,850.75')` | Invert — balance stays same |
+| `test.only()` left in | CRITICAL | `test.only(...)` | Remove before commit |
 | Wrong toast text | CRITICAL | `"Two Factor disabled"` | `"two Factor disabled"` (lowercase 'two') |
-| Wrong selector case | CRITICAL | `"toggle-TwoFactor"` | `"toggle-twoFactor"` |
-| Balance deduction asserted | CRITICAL | `expect(stat-balance).not.toContainText('$24,850.75')` | Invert — balance stays same |
-| `getByText` instead of `getByTestId` | IMPORTANT | `page.getByText('Sign In')` | `page.getByTestId('signin-submit')` |
+| Inline raw selector in spec | IMPORTANT | `page.getByTestId('freeze-CARD-001').click()` | `cardsPage.toggleFreeze('CARD-001')` |
+| Inline nav in spec | IMPORTANT | `page.getByTestId('nav-cards').click()` | `cardsPage.navigateViaSidebar()` |
 | Exact class match | IMPORTANT | `toHaveClass('on')` | `toHaveClass(/on/)` |
 | Missing assertion after action | IMPORTANT | `click()` with no `expect` | Add `toBeVisible()` or equivalent |
-| `waitUntil: networkidle` | IMPORTANT | `goto(url, { waitUntil: 'networkidle' })` | Just `goto(url)` |
-| No login before authenticated page | IMPORTANT | Direct `nav-cards.click()` without auth | Call `login(page)` first |
-| No `KNOWN LIMITATION` comment | SUGGESTION | Send-TC-013/Cards-TC-012/Settings-TC-014 without comment | Add `// KNOWN LIMITATION` |
+| No login before authenticated page | IMPORTANT | Direct nav without auth | `authFlow.loginAsDemo()` in `beforeEach` |
+| No `KNOWN LIMITATION` comment | SUGGESTION | Send-TC-013/Cards-TC-012 without comment | Add `// KNOWN LIMITATION` |
 | No step comments | SUGGESTION | Complex test with no `// Step N:` | Add step comments |
 
 ---
@@ -73,8 +82,8 @@ Work through every item for each test file under review.
 ## Issue Tag Format
 
 ```
-[CRITICAL] Line 42 — Wrong wait strategy
-  Current:  await page.waitForTimeout(1200);
-  Fix:      await page.getByTestId('dashboard-page').waitFor({ state: 'visible' });
-  Rule:     test-spec-template.md — Async Delay Patterns
+[CRITICAL] Line 42 — Flows access page directly
+  Current:  await this.loginPage.page.getByTestId('dashboard-page').waitFor({ state: 'visible' });
+  Fix:      await this.loginPage.waitForDashboard();
+  Rule:     tests/e2e/CLAUDE.md — Writing New Flows
 ```

@@ -33,14 +33,14 @@ npm run dev        # http://localhost:3000
 ## Running Tests
 
 ```bash
-npm test                                           # all tests, headless
-npx playwright test --headed                       # headed (watch the browser)
-npx playwright test tests/e2e/auth.spec.ts         # single spec file
-npx playwright test --reporter=line                # compact output
-npx playwright show-report                         # open last HTML report
+npm test                                                 # all tests, headless
+npx playwright test --headed                             # headed (watch the browser)
+npx playwright test tests/e2e/tests/auth.spec.ts         # single spec file
+npx playwright test --reporter=line                      # compact output
+npx playwright show-report                               # open last HTML report
 ```
 
-Test specs live in `tests/e2e/`. The dev server must be running before you run tests.
+Test specs live in `tests/e2e/tests/`. The dev server must be running before you run tests.
 
 ---
 
@@ -48,23 +48,41 @@ Test specs live in `tests/e2e/`. The dev server must be running before you run t
 
 This repo uses two Claude Code skills to generate and maintain tests. Run them from inside Claude Code.
 
-### Workflow
+### Standard workflow (recommended)
 
 ```
-/test-plan cards          →  writes docs/test-plans/cards.md
-/generate-tests cards     →  writes tests/e2e/cards.spec.ts, runs it, self-reviews
+/test-plan send-money      →  docs/test-plans/send-money.md
+/generate-tests send-money →  tests/e2e/tests/send-money.spec.ts (run + self-reviewed)
 ```
 
-Always run `/test-plan` before `/generate-tests`. If a test plan already exists, go straight to `/generate-tests`.
+### Ad-hoc workflow (no test plan needed)
+
+```
+/generate-tests budget     →  reads pages/BudgetPage.ts, writes spec, runs it,
+                               then backfills docs/test-plans/budget.md at the end
+```
+
+### Target specific TCs
+
+```
+/generate-tests Send-TC-001 Send-TC-013   →  generates only those two TCs
+/generate-tests Cards-TC-004 Cards-TC-005 →  add TCs to an existing spec
+```
+
+### Fix a flaky test
+
+```
+/generate-tests Cards-TC-007   →  re-reads CardsPage.ts, re-runs, self-reviews the diff
+```
 
 ### What each skill does
 
-| Skill | Command | Output |
+| Skill | Input | Output |
 |---|---|---|
-| test-plan | `/test-plan [feature]` | `docs/test-plans/{feature}.md` — TC scenarios with priority, layer, business rule refs |
-| generate-tests | `/generate-tests [feature]` | `tests/e2e/{feature}.spec.ts` — Playwright spec, run until green, then self-reviewed |
+| `/test-plan` | feature name (e.g. `budget`) | `docs/test-plans/budget.md` — TC scenarios with priority, layer, business rule references |
+| `/generate-tests` | feature name or TC IDs | `tests/e2e/tests/{feature}.spec.ts` — POM-based Playwright spec, run until green, self-reviewed |
 
-You can also target specific TCs: `/generate-tests Cards-TC-004 Cards-TC-005`
+Both skills read page objects (`tests/e2e/pages/*.ts`) and flows (`tests/e2e/flows/*.ts`) directly — selectors and multi-step sequences only need updating in one place.
 
 ### Repo layout
 
@@ -72,9 +90,18 @@ You can also target specific TCs: `/generate-tests Cards-TC-004 Cards-TC-005`
 vaultpay-fintech/
 ├── src/App.jsx                    # entire app — all mock data lives here
 ├── tests/e2e/
-│   ├── fixtures.ts                # shared login + navigateTo helpers
-│   ├── auth.spec.ts               # Auth E2E tests (Auth-TC-001 …)
-│   └── cards.spec.ts              # Cards E2E tests (Cards-TC-001 …)
+│   ├── fixtures/
+│   │   ├── base-fixture.ts        # Playwright fixture wiring (all pages + flows)
+│   │   └── test-users.ts          # DEMO_USER constant
+│   ├── pages/                     # Page Object Model — one class per feature page
+│   │   ├── BasePage.ts
+│   │   ├── LoginPage.ts, DashboardPage.ts, CardsPage.ts, …
+│   ├── flows/                     # multi-step user journeys
+│   │   ├── AuthFlow.ts, CardFlow.ts, SendMoneyFlow.ts, TransactionFlow.ts
+│   ├── tests/                     # spec files — one per feature
+│   │   ├── auth.spec.ts           # Auth E2E tests (Auth-TC-001 …)
+│   │   └── cards.spec.ts          # Cards E2E tests (Cards-TC-001 …)
+│   └── CLAUDE.md                  # e2e conventions, authoring rules for POs and flows
 ├── docs/test-plans/               # one .md per feature — 135 TCs total
 │   └── auth.md, cards.md, …
 ├── playwright.config.ts
@@ -84,12 +111,11 @@ vaultpay-fintech/
     │   ├── test-plan/SKILL.md
     │   └── generate-tests/SKILL.md
     └── references/                # domain knowledge loaded by skills
-        ├── domain.md              # app facts, mock data, credentials
+        ├── domain.md              # app facts, mock data, credentials, timing delays
         ├── business-rules.md      # exact validation messages and toast strings
-        ├── ui-selectors.md        # all data-testid values by page
-        ├── user-flows.md          # step-by-step flows, async delays, known limitations
         ├── test-planning.md       # TC format spec and coverage checklist
-        ├── test-spec-template.md  # Playwright code structure and assertion patterns
+        ├── user-flows.md          # nav mapping, validation tables, known limitations
+        ├── test-spec-template.md  # POM-based Playwright code structure and patterns
         └── review-checklist.md    # quality checklist run after test generation
 ```
 
