@@ -4,7 +4,7 @@ import { BasePage } from './BasePage';
 /**
  * Dashboard Page — main landing page after authentication.
  * data-testid root: dashboard-page
- * Reference: .claude/references/ui-selectors.md § Dashboard Page
+ * Selectors defined from: src/App.jsx — Dashboard component
  */
 export class DashboardPage extends BasePage {
   readonly path = '/';

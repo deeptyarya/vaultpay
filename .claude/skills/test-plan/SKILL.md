@@ -13,7 +13,6 @@ Read the following reference files:
 - `business-rules.md` — exact validation rules, error messages, toast text, visual thresholds
 - `test-planning.md` — required TC structure, category buckets, coverage checklist, TC ID convention table
 
-Also read `ui-selectors.md` for a quick map of what UI elements exist per page (planning context only — page objects are authoritative for implementation).
 
 ## Step 2 — Draft Scenarios
 

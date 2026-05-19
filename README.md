@@ -115,7 +115,6 @@ vaultpay-fintech/
         ├── business-rules.md      # exact validation messages and toast strings
         ├── test-planning.md       # TC format spec and coverage checklist
         ├── user-flows.md          # nav mapping, validation tables, known limitations
-        ├── ui-selectors.md        # planning reference (page objects are authoritative)
         ├── test-spec-template.md  # POM-based Playwright code structure and patterns
         └── review-checklist.md    # quality checklist run after test generation
 ```

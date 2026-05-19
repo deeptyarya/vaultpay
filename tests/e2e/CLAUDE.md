@@ -14,7 +14,7 @@ Auto-applied when editing any file in `tests/e2e/`. These rules override general
 ## Locators
 
 - `page.getByTestId('...')` only. Never `getByText`, CSS class, or XPath.
-- Case-sensitive — verify every value against `.claude/references/ui-selectors.md` before use.
+- Case-sensitive — verify every value against the page object constructor in `tests/e2e/pages/*.ts`.
 - Common traps: `toggle-twoFactor` (not `toggle-TwoFactor`), `freeze-CARD-001` (not `freeze-card-001`).
 
 ## Navigation

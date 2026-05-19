@@ -4,7 +4,7 @@ import { BasePage } from './BasePage';
 /**
  * Budget Page — spending categories with progress bars and stat summary.
  * data-testid root: budget-page
- * Reference: .claude/references/ui-selectors.md § Budget Page
+ * Selectors defined from: src/App.jsx — Budget component
  *
  * budgetCategory() accepts category slugs: 'groceries', 'entertainment', 'transport',
  * 'shopping', 'utilities', 'food-&-drink' (note the literal ampersand in the selector).

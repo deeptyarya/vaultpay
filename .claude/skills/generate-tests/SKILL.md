@@ -17,7 +17,7 @@ For selectors and existing implementations, read the source directly — these a
 - `tests/e2e/pages/*.ts` — all page objects (locators, methods)
 - `tests/e2e/flows/*.ts` — all flow classes (multi-step sequences)
 
-Do NOT read `references/ui-selectors.md` for implementation — it may lag behind the code.
+Do NOT read any reference file for selectors — page objects are the authoritative source.
 
 ## Step 2 — Load Test Plan (Optional)
 

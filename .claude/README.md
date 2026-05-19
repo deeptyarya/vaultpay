@@ -31,9 +31,8 @@ Reference files contain domain knowledge — facts and rules that are not deriva
 | `test-spec-template.md` | POM-based Playwright code structure, async wait patterns, assertion examples, anti-patterns | `/generate-tests` |
 | `review-checklist.md` | Quality checklist run as the final step of `/generate-tests` before declaring done | `/generate-tests` |
 | `user-flows.md` | Simulated delays, nav mapping, validation error tables, known limitations | `/test-plan` |
-| `ui-selectors.md` | All `data-testid` values by page — **planning context only** | `/test-plan` |
 
-> **Selector authority**: `tests/e2e/pages/*.ts` page objects are the authoritative source for selectors at implementation time. `/generate-tests` reads page objects directly — not `ui-selectors.md`. If a testid changes, update the page object; the skill picks it up automatically.
+> **Selector authority**: `tests/e2e/pages/*.ts` page objects are the single source of truth for all selectors. If a testid changes, update the page object — both skills pick it up automatically.
 
 ---
 

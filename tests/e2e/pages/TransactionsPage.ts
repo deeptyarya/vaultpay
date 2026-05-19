@@ -4,7 +4,7 @@ import { BasePage } from './BasePage';
 /**
  * Transactions Page — full transaction list with search and filters.
  * data-testid root: transactions-page
- * Reference: .claude/references/ui-selectors.md § Transactions Page
+ * Selectors defined from: src/App.jsx — Transactions component
  */
 export class TransactionsPage extends BasePage {
   readonly path = '';

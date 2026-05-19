@@ -4,7 +4,7 @@ import { BasePage } from './BasePage';
 /**
  * Settings Page — profile info, security toggles, and danger zone.
  * data-testid root: settings-page
- * Reference: .claude/references/ui-selectors.md § Settings Page
+ * Selectors defined from: src/App.jsx — Settings component
  *
  * Toggle testids use camelCase suffixes: toggle-twoFactor, toggle-biometric, etc.
  */

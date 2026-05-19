@@ -4,7 +4,7 @@ import { BasePage } from './BasePage';
 /**
  * Send Money Page — transfer funds to contacts or by email.
  * data-testid root: send-money-page
- * Reference: .claude/references/ui-selectors.md § Send Money Page
+ * Selectors defined from: src/App.jsx — Send Money component
  *
  * Note: nav testid is 'nav-send' but page root is 'send-money-page' (asymmetric by design in the app).
  */

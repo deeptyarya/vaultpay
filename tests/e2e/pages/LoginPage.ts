@@ -4,7 +4,7 @@ import { BasePage } from './BasePage';
 /**
  * Login Page — Sign In form at the app root.
  * data-testid root: signin-page
- * Reference: .claude/references/ui-selectors.md § Auth Pages / Sign In
+ * Selectors defined from: src/App.jsx — auth section
  */
 export class LoginPage extends BasePage {
   readonly path = '/';

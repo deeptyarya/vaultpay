@@ -12,7 +12,7 @@ Use this when updating an existing skill or adding a new one. It captures the ar
 - Skills read from both — they do NOT maintain a third copy.
 
 **Page objects own selectors. References do not.**
-`/generate-tests` reads `tests/e2e/pages/*.ts` directly for locators. `ui-selectors.md` exists only as planning context for `/test-plan`. If you add a skill step that reads `ui-selectors.md` for implementation, it will silently use stale data whenever a testid changes.
+`/generate-tests` reads `tests/e2e/pages/*.ts` directly for locators. If a testid changes, update the page object — both skills pick it up automatically. Never add a reference file to store selector names; it becomes a third copy that drifts.
 
 **References contain assertions, not steps.**
 `business-rules.md` holds character-perfect toast strings and validation messages — the values to assert against. It does not describe how to interact with the UI. Those are in the flow classes.
@@ -39,7 +39,7 @@ Architecture context:
 Key constraints (must not be violated by any skill step):
 1. Flows call page object methods only — never page.getByTestId() or page.goto() directly
 2. Spec files import test/expect from '../fixtures/base-fixture', not '@playwright/test'
-3. /generate-tests reads tests/e2e/pages/*.ts for selectors — NOT ui-selectors.md (stale)
+3. /generate-tests reads tests/e2e/pages/*.ts for selectors — never a reference file
 4. /generate-tests does not require a test plan — it backfills docs/test-plans/ at the end if missing
 5. Assertions use exact strings from business-rules.md — no paraphrasing
 

@@ -4,7 +4,7 @@ import { BasePage } from './BasePage';
 /**
  * Cards Page — manage payment cards (freeze, unfreeze, lock).
  * data-testid root: cards-page
- * Reference: .claude/references/ui-selectors.md § Cards Page
+ * Selectors defined from: src/App.jsx — Cards component
  *
  * Card IDs in mock data: CARD-001 (Visa), CARD-002 (Mastercard)
  * Dynamic locators (cardContainer, freezeBtn, lockBtn) accept a card ID string.
