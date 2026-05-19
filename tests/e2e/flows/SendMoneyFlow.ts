@@ -16,7 +16,7 @@ export class SendMoneyFlow {
   async sendToContact(contactId: string, amount: number, note?: string): Promise<void> {
     await this.sendPage.contactChip(contactId).click();
     await this.sendPage.fillAndReview(amount, note);
-    await this.sendPage.modalConfirm.click();
-    await this.sendPage.toastMessage.waitFor({ state: 'visible' });
+    await this.sendPage.confirmModal();
+    await this.sendPage.waitForToast();
   }
 }

@@ -27,7 +27,7 @@ If it does NOT exist → proceed using the user's description or conversation co
 
 Do NOT stop if no test plan exists.
 
-If specific TC IDs are given (e.g. `Send-TC-001`), locate them in the appropriate test plan file using the prefix to identify the feature (see TC ID Convention table in `references/test-planning.md`).
+If specific TC IDs are given (e.g. `Send-TC-001`), locate them in the appropriate test plan file using the prefix to identify the feature (see TC ID Convention table in `.claude/references/test-planning.md`).
 
 ## Step 3 — Filter to E2E Layer
 
@@ -60,7 +60,7 @@ Inspect `tests/e2e/pages/` and `tests/e2e/flows/`:
 
 Write to `tests/e2e/tests/{feature}.spec.ts`. If the file already exists, add to it rather than creating a duplicate.
 
-Follow `tests/e2e/CLAUDE.md` (always-on conventions) and `references/test-spec-template.md` for code structure. Key requirements:
+Follow `tests/e2e/CLAUDE.md` (always-on conventions) and `.claude/references/test-spec-template.md` for code structure. Key requirements:
 
 - **File header**: open with the JSDoc block — feature name, test plan path, E2E TC IDs covered, skipped TCs with layer and reason.
 - **Imports**: from `../fixtures/base-fixture` and `../fixtures/test-users` — never from `@playwright/test` directly.
@@ -72,7 +72,7 @@ Follow `tests/e2e/CLAUDE.md` (always-on conventions) and `references/test-spec-t
 - **Known limitations**: `// KNOWN LIMITATION: {description}` as the first line in those test bodies.
 - **Async waits**: no `waitForTimeout` — use page object methods or `.waitFor({ state: 'visible' })` on outcome locators.
 
-Verify every asserted string against `references/business-rules.md` — character for character.
+Verify every asserted string against `.claude/references/business-rules.md` — character for character.
 
 ## Step 6 — Run and Debug
 
@@ -84,17 +84,17 @@ Read failure output → diagnose (timeout = wrong selector or missing wait; asse
 
 ## Step 7 — Self-Review
 
-After tests pass, run `references/review-checklist.md` against the generated spec and any new page objects or flows:
+After tests pass, run `.claude/references/review-checklist.md` against the generated spec and any new page objects or flows:
 - Check Page Object & Fixture Usage section (POM pattern compliance)
 - Check Async Delay Handling section
-- Verify every asserted string matches `references/business-rules.md`
+- Verify every asserted string matches `.claude/references/business-rules.md`
 - Check for anti-patterns from `test-spec-template.md`
 
 Tag any issues `[CRITICAL]` / `[IMPORTANT]` / `[SUGGESTION]`. Fix all `[CRITICAL]` items before declaring done.
 
 ## Step 8 — Backfill Test Plan (if missing)
 
-If no test plan existed in Step 2, save the implemented scenarios now to `docs/test-plans/{feature}.md` using the TC format from `references/test-planning.md`. This ensures the test record is preserved for future developers.
+If no test plan existed in Step 2, save the implemented scenarios now to `docs/test-plans/{feature}.md` using the TC format from `.claude/references/test-planning.md`. This ensures the test record is preserved for future developers.
 
 ## Output
 

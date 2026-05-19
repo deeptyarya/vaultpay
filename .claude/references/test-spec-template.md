@@ -39,10 +39,10 @@ test.beforeEach(async ({ loginPage }) => {
   await loginPage.navigate();
 });
 
-test('Auth-TC-001: …', async ({ page, loginPage }) => {
+test('Auth-TC-001: …', async ({ loginPage, dashboardPage }) => {
   await loginPage.fillAndSubmit(DEMO_USER.email, DEMO_USER.password);
-  await page.getByTestId('dashboard-page').waitFor({ state: 'visible' });
-  // … assertions
+  await loginPage.waitForDashboard(); // absorbs 1,200ms delay
+  // … assertions via dashboardPage locators
 });
 ```
 

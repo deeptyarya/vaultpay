@@ -1,5 +1,5 @@
 import { type Page, type Locator } from '@playwright/test';
-import { BasePage } from './BasePage';
+import { PageWithModals } from './PageWithModals';
 
 /**
  * Send Money Page — transfer funds to contacts or by email.
@@ -8,7 +8,7 @@ import { BasePage } from './BasePage';
  *
  * Note: nav testid is 'nav-send' but page root is 'send-money-page' (asymmetric by design in the app).
  */
-export class SendMoneyPage extends BasePage {
+export class SendMoneyPage extends PageWithModals {
   readonly path = '';
 
   readonly sendMoneyPage: Locator;
@@ -18,11 +18,6 @@ export class SendMoneyPage extends BasePage {
   readonly sendSubmit: Locator;
   readonly recipientError: Locator;
   readonly amountError: Locator;
-  readonly toastMessage: Locator;
-  readonly modalOverlay: Locator;
-  readonly modal: Locator;
-  readonly modalConfirm: Locator;
-  readonly modalCancel: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -33,11 +28,6 @@ export class SendMoneyPage extends BasePage {
     this.sendSubmit     = page.getByTestId('send-submit');
     this.recipientError = page.getByTestId('recipient-error');
     this.amountError    = page.getByTestId('amount-error');
-    this.toastMessage   = page.getByTestId('toast-message');
-    this.modalOverlay   = page.getByTestId('modal-overlay');
-    this.modal          = page.getByTestId('modal');
-    this.modalConfirm   = page.getByTestId('modal-confirm');
-    this.modalCancel    = page.getByTestId('modal-cancel');
   }
 
   get requiredElements(): Locator[] {

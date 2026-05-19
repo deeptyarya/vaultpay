@@ -14,22 +14,22 @@ test.describe('Auth — Sign In', () => {
     await loginPage.navigate();
   });
 
-  test('Auth-TC-001: happy path — demo user lands on dashboard with correct data', async ({ page, loginPage }) => {
+  test('Auth-TC-001: happy path — demo user lands on dashboard with correct data', async ({ loginPage, dashboardPage }) => {
     // Step 1: Fill credentials
     await loginPage.fillAndSubmit(DEMO_USER.email, DEMO_USER.password);
 
     // Step 2: Wait for 1,200ms async delay to resolve
-    await page.getByTestId('dashboard-page').waitFor({ state: 'visible' });
+    await loginPage.waitForDashboard();
 
     // Step 3: Assert authenticated layout
-    await expect(page.getByTestId('sidebar')).toBeVisible();
-    await expect(page.getByTestId('page-title')).toContainText('Welcome back, Alex');
+    await expect(dashboardPage.sidebar).toBeVisible();
+    await expect(dashboardPage.pageTitle).toContainText('Welcome back, Alex');
 
     // Step 4: Assert dashboard data for demo user (balance from MOCK_USERS in App.jsx)
-    await expect(page.getByTestId('stat-balance')).toContainText(DEMO_USER.balance);
+    await expect(dashboardPage.statBalance).toContainText(DEMO_USER.balance);
   });
 
-  test('Auth-TC-002: submit button shows loading state during 1,200ms sign-in delay', async ({ page, loginPage }) => {
+  test('Auth-TC-002: submit button shows loading state during 1,200ms sign-in delay', async ({ loginPage }) => {
     // Step 1: Fill credentials
     await loginPage.fillAndSubmit(DEMO_USER.email, DEMO_USER.password);
 
@@ -39,6 +39,6 @@ test.describe('Auth — Sign In', () => {
     await expect(loginPage.submitButton).toHaveText('Signing in...');
 
     // Step 3: Confirm the delay eventually resolves and navigation completes
-    await page.getByTestId('dashboard-page').waitFor({ state: 'visible' });
+    await loginPage.waitForDashboard();
   });
 });

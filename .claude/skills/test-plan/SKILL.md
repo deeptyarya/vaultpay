@@ -9,17 +9,17 @@ argument-hint: [feature name — e.g. "auth", "send-money", "cards", or blank fo
 ## Step 1 — Load References
 
 Read the following reference files:
-- `domain.md` — app facts, mock data, all timing delays, page state machine
-- `business-rules.md` — exact validation rules, error messages, toast text, visual thresholds
-- `test-planning.md` — required TC structure, category buckets, coverage checklist, TC ID convention table
+- `.claude/references/domain.md` — app facts, mock data, all timing delays, page state machine
+- `.claude/references/business-rules.md` — exact validation rules, error messages, toast text, visual thresholds
+- `.claude/references/test-planning.md` — required TC structure, category buckets, coverage checklist, TC ID convention table
 
 
 ## Step 2 — Draft Scenarios
 
-For the requested feature, work through the 6 category buckets defined in `references/test-planning.md`:
+For the requested feature, work through the 6 category buckets defined in `.claude/references/test-planning.md`:
 **Happy Path | Business Rule | Negative | Edge Case | Security | UI State**
 
-Use the coverage checklist in `test-planning.md` to ensure no scenario type is missed.
+Use the coverage checklist in `.claude/references/test-planning.md` to ensure no scenario type is missed.
 
 ## Step 3 — Assign Layer
 
@@ -31,7 +31,7 @@ For each scenario, assign its test layer inline:
 
 ## Step 4 — Write Output
 
-Save the scenarios to `docs/test-plans/{feature}.md` using the `{Prefix}-TC-NNN` format defined in `references/test-planning.md` (TC ID Convention table). Each file's numbering starts at 001.
+Save the scenarios to `docs/test-plans/{feature}.md` using the `{Prefix}-TC-NNN` format defined in `.claude/references/test-planning.md` (TC ID Convention table). Each file's numbering starts at 001.
 
 If no feature is specified, generate the full suite in order:
 Auth → Navigation → Dashboard → Transactions → Send Money → Cards → Budget → Settings → Toast/Modal → Security

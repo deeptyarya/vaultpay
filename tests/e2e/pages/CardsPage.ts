@@ -1,5 +1,5 @@
 import { type Page, type Locator } from '@playwright/test';
-import { BasePage } from './BasePage';
+import { PageWithModals } from './PageWithModals';
 
 /**
  * Cards Page — manage payment cards (freeze, unfreeze, lock).
@@ -9,26 +9,16 @@ import { BasePage } from './BasePage';
  * Card IDs in mock data: CARD-001 (Visa), CARD-002 (Mastercard)
  * Dynamic locators (cardContainer, freezeBtn, lockBtn) accept a card ID string.
  */
-export class CardsPage extends BasePage {
+export class CardsPage extends PageWithModals {
   readonly path = '';
 
   readonly cardsPage: Locator;
   readonly cardLimitsTable: Locator;
-  readonly toastMessage: Locator;
-  readonly modalOverlay: Locator;
-  readonly modal: Locator;
-  readonly modalConfirm: Locator;
-  readonly modalCancel: Locator;
 
   constructor(page: Page) {
     super(page);
     this.cardsPage       = page.getByTestId('cards-page');
     this.cardLimitsTable = page.getByTestId('card-limits-table');
-    this.toastMessage    = page.getByTestId('toast-message');
-    this.modalOverlay    = page.getByTestId('modal-overlay');
-    this.modal           = page.getByTestId('modal');
-    this.modalConfirm    = page.getByTestId('modal-confirm');
-    this.modalCancel     = page.getByTestId('modal-cancel');
   }
 
   get requiredElements(): Locator[] {
@@ -63,11 +53,4 @@ export class CardsPage extends BasePage {
     await this.lockBtn(cardId).click();
   }
 
-  async confirmModal(): Promise<void> {
-    await this.modalConfirm.click();
-  }
-
-  async cancelModal(): Promise<void> {
-    await this.modalCancel.click();
-  }
 }

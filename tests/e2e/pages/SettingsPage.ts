@@ -1,5 +1,5 @@
 import { type Page, type Locator } from '@playwright/test';
-import { BasePage } from './BasePage';
+import { PageWithModals } from './PageWithModals';
 
 /**
  * Settings Page — profile info, security toggles, and danger zone.
@@ -8,7 +8,7 @@ import { BasePage } from './BasePage';
  *
  * Toggle testids use camelCase suffixes: toggle-twoFactor, toggle-biometric, etc.
  */
-export class SettingsPage extends BasePage {
+export class SettingsPage extends PageWithModals {
   readonly path = '';
 
   readonly settingsPage: Locator;
@@ -23,11 +23,6 @@ export class SettingsPage extends BasePage {
   readonly toggleSmsAlerts: Locator;
   readonly changePassword: Locator;
   readonly deleteAccount: Locator;
-  readonly toastMessage: Locator;
-  readonly modalOverlay: Locator;
-  readonly modal: Locator;
-  readonly modalConfirm: Locator;
-  readonly modalCancel: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -43,11 +38,6 @@ export class SettingsPage extends BasePage {
     this.toggleSmsAlerts     = page.getByTestId('toggle-smsAlerts');
     this.changePassword      = page.getByTestId('change-password');
     this.deleteAccount       = page.getByTestId('delete-account');
-    this.toastMessage        = page.getByTestId('toast-message');
-    this.modalOverlay        = page.getByTestId('modal-overlay');
-    this.modal               = page.getByTestId('modal');
-    this.modalConfirm        = page.getByTestId('modal-confirm');
-    this.modalCancel         = page.getByTestId('modal-cancel');
   }
 
   get requiredElements(): Locator[] {

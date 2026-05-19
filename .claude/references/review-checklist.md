@@ -14,11 +14,12 @@ Work through every item for each spec, page object, or flow under review.
 - [ ] Spec interactions call page object methods — not raw `page.getByTestId(...).click()` in test body — `[IMPORTANT]`
 - [ ] Multi-step sequences (>3 PO interactions) extracted to a Flow class — `[SUGGESTION]`
 - [ ] Flows call PO methods only — never `page`, `page.goto()`, or `page.getByTestId()` directly — `[CRITICAL]`
+- [ ] Flows do not call `.waitFor()` or Playwright methods on PO Locator properties — use `waitForToast()`, `waitForModal()`, `confirmModal()`, `cancelModal()` instead — `[CRITICAL]`
 
 ## Auth Pattern
 
 - [ ] Auth spec: `beforeEach` uses `loginPage.navigate()` only — no `authFlow` (tests exercise the login flow itself)
-- [ ] After `loginPage.fillAndSubmit()`: waits for `loginPage.waitForDashboard()` or `page.getByTestId('dashboard-page').waitFor()` — not `waitForTimeout` — `[CRITICAL]`
+- [ ] After `loginPage.fillAndSubmit()`: waits for `loginPage.waitForDashboard()` — not `page.getByTestId(...)` directly, not `waitForTimeout` — `[CRITICAL]`
 - [ ] No test skips authentication and directly navigates to an authenticated page without `authFlow.loginAsDemo()`
 
 ## Async Delay Handling
@@ -59,6 +60,8 @@ Work through every item for each spec, page object, or flow under review.
 |---|---|---|---|
 | Wrong import | CRITICAL | `import { test } from '@playwright/test'` | `import { test } from '../fixtures/base-fixture'` |
 | Flows access page directly | CRITICAL | `this.loginPage.page.getByTestId(...)` | Add method to PO: `loginPage.waitForDashboard()` |
+| Flow calls `.waitFor()` on PO locator | CRITICAL | `this.cardsPage.toastMessage.waitFor(...)` | `this.cardsPage.waitForToast()` |
+| Flow calls `.click()` on PO locator | CRITICAL | `this.sendPage.modalConfirm.click()` | `this.sendPage.confirmModal()` |
 | Hard wait for login | CRITICAL | `waitForTimeout(1200)` | `authFlow.loginAsDemo()` or `loginPage.waitForDashboard()` |
 | Hard wait for send delay | CRITICAL | `waitForTimeout(1500)` | Toast `waitFor({ state: 'visible' })` |
 | Hard wait for toast | CRITICAL | `waitForTimeout(3000)` | Assert toast appeared; proceed |

@@ -70,7 +70,8 @@ Auto-applied when editing any file in `tests/e2e/`. These rules override general
 
 When adding a page object for a new feature:
 
-- Extend `BasePage`. Define `path` as `readonly`. Define `requiredElements` as a **getter** (not a readonly property).
+- Pages that show a toast or modal (e.g. CardsPage, SendMoneyPage, SettingsPage pattern): extend `PageWithModals` — inherits `toastMessage`, `modal`, `modalOverlay`, `modalConfirm`, `modalCancel` locators plus `waitForToast()`, `waitForModal()`, `confirmModal()`, `cancelModal()`.
+- Pages with no toast/modal: extend `BasePage` directly. Define `path` as `readonly`. Define `requiredElements` as a **getter** (not a readonly property).
 - **Sidebar-only pages** (no direct URL): set `path = ''`, override `navigate()` to throw an error, expose `navigateViaSidebar()` as a public method.
 - **Dynamic locators** (parameterized by ID, e.g. card or transaction ID): implement as methods returning `Locator`, not pre-bound class properties.
 - `page` is **`protected`** — never access it from a flow. If a flow needs to wait for an element, add a dedicated method to the page object (e.g., `loginPage.waitForDashboard()`).

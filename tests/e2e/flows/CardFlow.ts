@@ -12,7 +12,7 @@ export class CardFlow {
    */
   async freezeCard(cardId: string): Promise<void> {
     await this.cardsPage.toggleFreeze(cardId);
-    await this.cardsPage.toastMessage.waitFor({ state: 'visible' });
+    await this.cardsPage.waitForToast();
   }
 
   /**
@@ -20,8 +20,8 @@ export class CardFlow {
    */
   async lockCard(cardId: string): Promise<void> {
     await this.cardsPage.clickLock(cardId);
-    await this.cardsPage.modal.waitFor({ state: 'visible' });
+    await this.cardsPage.waitForModal();
     await this.cardsPage.confirmModal();
-    await this.cardsPage.toastMessage.waitFor({ state: 'visible' });
+    await this.cardsPage.waitForToast();
   }
 }
